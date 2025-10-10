@@ -1,10 +1,7 @@
 FROM docker.io/actualbudget/actual-server:latest
 
-# Heroku uses PORT environment variable
-ENV ACTUAL_PORT=$PORT
-
 # Expose the port (Heroku will assign this dynamically)
-EXPOSE $PORT
+EXPOSE 5006
 
-# The base image already has the correct CMD, but we'll make sure
-CMD ["node", "src/app.js"]
+# Use a shell script to set the port at runtime
+CMD sh -c 'export ACTUAL_PORT=${PORT:-5006} && node src/app.js'
