@@ -2,6 +2,7 @@
 echo "Starting setup_sync.sh"
 
 # Clear existing local data so the sync can recreate everything cleanly
+ls -lh /app/data
 echo "Clearing /app/data before sync"
 find /app/data -mindepth 1 -maxdepth 1 -exec rm -rf {} +
 
