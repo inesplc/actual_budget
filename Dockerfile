@@ -7,6 +7,9 @@ ENV ACTUAL_HOSTNAME=0.0.0.0
 RUN mkdir -p "$ACTUAL_DATA_DIR" "$ACTUAL_DATA_DIR/server-files" "$ACTUAL_DATA_DIR/user-files" \
 	&& chown -R 1001:1001 "$ACTUAL_DATA_DIR"
 
+# Make data directory world-writable so Heroku's dyno user can modify it
+RUN chmod -R 0777 "$ACTUAL_DATA_DIR"
+
 # Install curl and s3cmd
 RUN apt-get update \
 	&& apt-get -y install curl s3cmd \
