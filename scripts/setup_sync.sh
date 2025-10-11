@@ -1,6 +1,4 @@
 #!/bin/sh
-set -eu
-
 # Ensure cron daemon is running in the background
 cron
 
