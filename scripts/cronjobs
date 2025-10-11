@@ -1,2 +1,2 @@
 # m h dom mon command
-*/2 * * * * /bin/sh -lc 's3cmd --access_key="$CLOUDFLARE_R2_KEY_ID" --secret_key="$CLOUDFLARE_R2_SECRET_KEY" --host="$CLOUDFLARE_ACCOUNT_ID".r2.cloudflarestorage.com --host-bucket="$CLOUDFLARE_ACCOUNT_ID".r2.cloudflarestorage.com sync /app/data/ s3://actual-budget/data/ >> /var/log/cron.log 2>&1'
+*/15 * * * * /bin/sh -lc 's3cmd --access_key="$CLOUDFLARE_R2_KEY_ID" --secret_key="$CLOUDFLARE_R2_SECRET_KEY" --host="$CLOUDFLARE_ACCOUNT_ID".r2.cloudflarestorage.com --host-bucket="$CLOUDFLARE_ACCOUNT_ID".r2.cloudflarestorage.com sync /app/data/ s3://actual-budget/data/'
