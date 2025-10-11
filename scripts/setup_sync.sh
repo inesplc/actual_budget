@@ -1,6 +1,11 @@
 #!/bin/sh
 echo "Starting setup_sync.sh"
 
+# Remove existing .migrate file if it exists
+rm -f /app/data/.migrate
+touch /app/data/.migrate
+chown 1001:1001 /app/data/.migrate
+
 # Sync data from R2 to local /app/data directory
 # This ensures that the latest data is available before starting
 s3cmd --access_key="${CLOUDFLARE_R2_KEY_ID}" \
