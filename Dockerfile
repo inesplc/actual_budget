@@ -7,14 +7,25 @@ ENV ACTUAL_HOSTNAME=0.0.0.0
 RUN mkdir -p "$ACTUAL_DATA_DIR" "$ACTUAL_DATA_DIR/server-files" "$ACTUAL_DATA_DIR/user-files" \
 	&& chown -R 1001:1001 "$ACTUAL_DATA_DIR"
 
-# Install cron and s3cmd
+# Install curl and s3cmd
 RUN apt-get update \
-	&& apt-get -y install cron s3cmd \
+	&& apt-get -y install curl s3cmd \
 	&& rm -rf /var/lib/apt/lists/*
+
+# Install supercronic
+ENV SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.2.38/supercronic-linux-amd64 \
+    SUPERCRONIC_SHA1SUM=bc072eba2ae083849d5f86c6bd1f345f6ed902d0 \
+    SUPERCRONIC=supercronic-linux-amd64
+
+RUN curl -fsSLO "$SUPERCRONIC_URL" \
+ && echo "${SUPERCRONIC_SHA1SUM}  ${SUPERCRONIC}" | sha1sum -c - \
+ && chmod +x "$SUPERCRONIC" \
+ && mv "$SUPERCRONIC" "/usr/local/bin/${SUPERCRONIC}" \
+ && ln -s "/usr/local/bin/${SUPERCRONIC}" /usr/local/bin/supercronic
 
 # Add data sync script
 COPY scripts /usr/local/bin
 # Ensure the scripts are executable
 RUN chmod +x /usr/local/bin/*.sh
 
-CMD ["sh", "-c", "/usr/local/bin/setup_sync.sh && cron -f /usr/local/bin/cronjobs && node app.js"]
+CMD ["sh", "-c", "/usr/local/bin/setup_sync.sh && node app.js"]
