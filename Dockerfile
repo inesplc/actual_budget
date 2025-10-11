@@ -13,8 +13,8 @@ RUN apt-get update \
 	&& rm -rf /var/lib/apt/lists/*
 
 # Add data sync script
-COPY scripts/setup_sync.sh /usr/local/bin/setup_sync.sh
-RUN chmod +x /usr/local/bin/setup_sync.sh
-COPY scripts/cronjobs /usr/local/bin/cronjobs
+COPY scripts /usr/local/bin
+# Ensure the scripts are executable
+RUN chmod +x /usr/local/bin/*.sh
 
 CMD ["sh", "-c", "/usr/local/bin/setup_sync.sh && node app.js"]
