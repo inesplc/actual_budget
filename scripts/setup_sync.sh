@@ -1,5 +1,5 @@
 #!/bin/sh
-set -euo pipefail
+set -eu
 
 # Ensure cron daemon is running in the background
 cron
