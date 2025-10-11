@@ -1,0 +1,2 @@
+# m h dom mon dow command
+*/15 * * * * /bin/sh -lc 'cd $pwd && s3cmd --access_key="$CLOUDFLARE_R2_KEY_ID" --secret_key="$CLOUDFLARE_R2_SECRET_KEY" --host="$CLOUDFLARE_ACCOUNT_ID".r2.cloudflarestorage.com --host-bucket="$CLOUDFLARE_ACCOUNT_ID".r2.cloudflarestorage.com sync "$PWD"/data s3://actual-budget/data'
