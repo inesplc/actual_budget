@@ -1,13 +1,13 @@
 #!/bin/sh
 echo "Starting setup_sync.sh"
 
-# Remove existing .migrate file if it exists
-rm -f /app/data/.migrate
-touch /app/data/.migrate
-chown 1001:1001 /app/data/.migrate
+# Clear existing local data so the sync can recreate everything cleanly
+echo "Clearing /app/data before sync"
+find /app/data -mindepth 1 -maxdepth 1 -exec rm -rf {} +
 
 # Sync data from R2 to local /app/data directory
 # This ensures that the latest data is available before starting
+echo "Syncing data from R2 to /app/data"
 s3cmd --access_key="${CLOUDFLARE_R2_KEY_ID}" \
       --secret_key="${CLOUDFLARE_R2_SECRET_KEY}" \
       --host="${CLOUDFLARE_ACCOUNT_ID}.r2.cloudflarestorage.com" \
