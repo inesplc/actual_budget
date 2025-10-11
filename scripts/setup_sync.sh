@@ -1,10 +1,15 @@
 #!/bin/sh
-echo "Starting setup_sync.sh"
+set -eu
+
+echo "Starting setup_sync.sh as $(id -un) (uid=$(id -u), gid=$(id -g))"
+echo "Existing contents of /app/data:"
+ls -al /app/data || echo "Unable to list /app/data"
 
 # Clear existing local data so the sync can recreate everything cleanly
-ls -lh /app/data
 echo "Clearing /app/data before sync"
-find /app/data -mindepth 1 -maxdepth 1 -exec rm -rf {} +
+find /app/data -mindepth 1 -maxdepth 1 -exec sh -c 'echo "Removing $1"; rm -rf "$1"' _ {} \;
+echo "Contents of /app/data after clear:"
+ls -al /app/data || echo "Unable to list /app/data after clear"
 
 # Sync data from R2 to local /app/data directory
 # This ensures that the latest data is available before starting
@@ -15,6 +20,8 @@ s3cmd --access_key="${CLOUDFLARE_R2_KEY_ID}" \
       --host-bucket="${CLOUDFLARE_ACCOUNT_ID}.r2.cloudflarestorage.com" \
       sync s3://actual-budget/data/ /app/data/
 echo "Data sync complete"
+echo "Contents of /app/data after sync:"
+ls -al /app/data || echo "Unable to list /app/data after sync"
 
 CRON_FILE="/usr/local/bin/cronjobs"
 
