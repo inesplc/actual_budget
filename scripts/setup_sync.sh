@@ -23,7 +23,7 @@ CRON_FILE="/usr/local/bin/cronjobs"
 
 if [ -f "$CRON_FILE" ]; then
       echo "Starting supercronic with $CRON_FILE"
-      supercronic "$CRON_FILE" &
+      supercronic "$CRON_FILE" >> /var/log/supercronic.log 2>&1 &
 else
       echo "Cron file $CRON_FILE not found; skipping supercronic startup"
 fi
