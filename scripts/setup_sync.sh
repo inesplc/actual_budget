@@ -4,6 +4,8 @@ set -eu
 echo "Starting setup_sync.sh as $(id -un) (uid=$(id -u), gid=$(id -g))"
 echo "Using data directory: $ACTUAL_DATA_DIR"
 
+rm -rf "$ACTUAL_DATA_DIR"
+
 mkdir -p "$ACTUAL_DATA_DIR" "$ACTUAL_DATA_DIR/server-files" "$ACTUAL_DATA_DIR/user-files"
 chmod -R 0777 "$ACTUAL_DATA_DIR"
 
