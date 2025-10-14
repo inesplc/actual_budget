@@ -3,12 +3,9 @@ FROM docker.io/actualbudget/actual-server:latest
 ENV ACTUAL_DATA_DIR=/app/data
 ENV ACTUAL_HOSTNAME=0.0.0.0
 
-# Setup data directory
-RUN mkdir -p "$ACTUAL_DATA_DIR" "$ACTUAL_DATA_DIR/server-files" "$ACTUAL_DATA_DIR/user-files" \
-	&& chown -R 1001:1001 "$ACTUAL_DATA_DIR"
-
-# Make data directory world-writable so Heroku's dyno user can modify it
-RUN chmod -R 0777 "$ACTUAL_DATA_DIR"
+# # Setup data directory at build-time (no-op on Heroku but kept for local runs)
+# RUN mkdir -p "$ACTUAL_DATA_DIR" "$ACTUAL_DATA_DIR/server-files" "$ACTUAL_DATA_DIR/user-files" \
+# 	&& chmod -R 0777 "$ACTUAL_DATA_DIR"
 
 # Install curl and s3cmd
 RUN apt-get update \
