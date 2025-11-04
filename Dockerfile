@@ -32,4 +32,4 @@ RUN chmod +x $SCRIPTS_DIR/*.sh
 RUN mkdir -p $LOGS_DIR && touch $LOGS_DIR/supercronic.log
 
 
-CMD ["sh", "-c", "$SCRIPTS_DIR/setup_sync.sh && supercronic -split-logs $SCRIPTS_DIR/crontab >>$LOGS_DIR/supercronic.log 2>&1 & node app.js"]
+CMD ["sh", "-c", "$SCRIPTS_DIR/setup_sync.sh && supercronic -split-logs $SCRIPTS_DIR/crontab >>$LOGS_DIR/supercronic.log & node app.js"]
