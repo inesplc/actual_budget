@@ -27,7 +27,7 @@ CRON_FILE="$SCRIPTS_DIR/crontab"
 
 if [ -f "$CRON_FILE" ]; then
       echo "Starting supercronic with $CRON_FILE"
-      supercronic -split-logs "$CRON_FILE" 1> "$LOGS_DIR/supercronic.log" 2>&1 &
+      supercronic "$CRON_FILE" >> "$LOGS_DIR/supercronic.log" 2>&1 &
 else
       echo "Cron file $CRON_FILE not found; skipping supercronic startup"
 fi
