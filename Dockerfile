@@ -29,6 +29,7 @@ RUN curl -fsSLO "$SUPERCRONIC_URL" \
 COPY scripts $SCRIPTS_DIR
 # Ensure the scripts are executable
 RUN chmod +x $SCRIPTS_DIR/*.sh
+RUN touch $LOGS_DIR/supercronic.log
 
 
-CMD ["sh", "-c", "ls -lhaR $ACTUAL_DATA_DIR && $SCRIPTS_DIR/setup_sync.sh && supercronic $SCRIPTS_DIR/crontab >> $LOGS_DIR/supercronic.log 2>&1 && node app.js"]
+CMD ["sh", "-c", "$SCRIPTS_DIR/setup_sync.sh && supercronic $SCRIPTS_DIR/crontab >> $LOGS_DIR/supercronic.log 2>&1 && node app.js"]
