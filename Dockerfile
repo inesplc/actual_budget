@@ -1,5 +1,7 @@
 FROM docker.io/actualbudget/actual-server:latest
 
+ENV SCRIPTS_DIR=/scripts
+ENV LOGS_DIR=/logs
 ENV ACTUAL_DATA_DIR=/app/data
 ENV ACTUAL_HOSTNAME=0.0.0.0
 
@@ -24,8 +26,9 @@ RUN curl -fsSLO "$SUPERCRONIC_URL" \
  && ln -s "/usr/local/bin/${SUPERCRONIC}" /usr/local/bin/supercronic
 
 # Add data sync script
-COPY scripts /usr/local/bin
+COPY scripts $SCRIPTS_DIR
 # Ensure the scripts are executable
-RUN chmod +x /usr/local/bin/*.sh
+RUN chmod +x $SCRIPTS_DIR/*.sh
 
-CMD ["sh", "-c", "ls -lhaR $ACTUAL_DATA_DIR && /usr/local/bin/setup_sync.sh && node app.js"]
+
+CMD ["sh", "-c", "ls -lhaR $ACTUAL_DATA_DIR && $SCRIPTS_DIR/setup_sync.sh && supercronic $SCRIPTS_DIR/crontab >> $LOGS_DIR/supercronic.log 2>&1 && node app.js"]
