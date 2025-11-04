@@ -28,4 +28,4 @@ COPY scripts /usr/local/bin
 # Ensure the scripts are executable
 RUN chmod +x /usr/local/bin/*.sh
 
-CMD ["sh", "-c", "ls -lha $ACTUAL_DATA_DIR && /usr/local/bin/setup_sync.sh && node app.js"]
+CMD ["sh", "-c", "ls -lhaR $ACTUAL_DATA_DIR && /usr/local/bin/setup_sync.sh && node app.js"]
