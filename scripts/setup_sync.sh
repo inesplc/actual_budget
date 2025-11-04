@@ -6,8 +6,8 @@ echo "Using data directory: $ACTUAL_DATA_DIR"
 
 rm -rf "$ACTUAL_DATA_DIR"
 
-mkdir -p "$ACTUAL_DATA_DIR" "$ACTUAL_DATA_DIR/server-files" "$ACTUAL_DATA_DIR/user-files"
-chmod -R 0777 "$ACTUAL_DATA_DIR"
+# mkdir -p "$ACTUAL_DATA_DIR" "$ACTUAL_DATA_DIR/server-files" "$ACTUAL_DATA_DIR/user-files"
+# chmod -R 0777 "$ACTUAL_DATA_DIR"
 
 # Sync data from R2 to local /app/data directory
 # This ensures that the latest data is available before starting
@@ -16,7 +16,7 @@ s3cmd --access_key="${CLOUDFLARE_R2_KEY_ID}" \
       --secret_key="${CLOUDFLARE_R2_SECRET_KEY}" \
       --host="${CLOUDFLARE_ACCOUNT_ID}.r2.cloudflarestorage.com" \
       --host-bucket="${CLOUDFLARE_ACCOUNT_ID}.r2.cloudflarestorage.com" \
-      sync s3://actual-budget/data/ "$ACTUAL_DATA_DIR/"
+      sync s3://actual-budget/data "$ACTUAL_DATA_DIR/"
 echo "Data sync complete"
 echo "Contents of $ACTUAL_DATA_DIR after sync:"
 ls -al "$ACTUAL_DATA_DIR" || echo "Unable to list $ACTUAL_DATA_DIR after sync"
