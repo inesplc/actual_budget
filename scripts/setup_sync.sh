@@ -4,6 +4,10 @@ set -eu
 echo "Starting setup_sync.sh as $(id -un) (uid=$(id -u), gid=$(id -g))"
 echo "Using data directory: $ACTUAL_DATA_DIR"
 
+rm -rf "$ACTUAL_DATA_DIR/server-files/.*" "$ACTUAL_DATA_DIR/server-files/*"
+rm -rf "$ACTUAL_DATA_DIR/user-files/.*" "$ACTUAL_DATA_DIR/user-files/*"
+rm -rf "$ACTUAL_DATA_DIR/*"
+
 chmod -R 0777 "$ACTUAL_DATA_DIR"
 
 # Sync data from R2 to local /app/data directory
