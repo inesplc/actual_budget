@@ -17,6 +17,7 @@ s3cmd --access_key="${CLOUDFLARE_R2_KEY_ID}" \
       --secret_key="${CLOUDFLARE_R2_SECRET_KEY}" \
       --host="${CLOUDFLARE_ACCOUNT_ID}.r2.cloudflarestorage.com" \
       --host-bucket="${CLOUDFLARE_ACCOUNT_ID}.r2.cloudflarestorage.com" \
+      --no-preserve \
       sync s3://actual-budget/data "$ACTUAL_DATA_DIR/" 2>&1
 echo "Data sync complete"
 echo "Contents of $ACTUAL_DATA_DIR after sync:"
