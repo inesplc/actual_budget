@@ -10,6 +10,6 @@ if ! flock -n 9; then
     exit 1
 fi
 
-echo "$(date '+%Y-%m-%d %H:%M:%S') - Syncing $ACTUAL_DATA_DIR to R2..."
-s3cmd --delete-removed sync $ACTUAL_DATA_DIR s3://actual-budget/data/ 2>&1
+echo "$(date '+%Y-%m-%d %H:%M:%S') - Syncing $ACTUAL_DATA_DIR/ to R2..."
+s3cmd --delete-removed sync "$ACTUAL_DATA_DIR/" s3://actual-budget/data/ 2>&1
 echo "$(date '+%Y-%m-%d %H:%M:%S') - Data sync complete"

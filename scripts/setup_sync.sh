@@ -23,8 +23,8 @@ chmod -R 0777 "$ACTUAL_DATA_DIR"
 
 # Sync data from R2 to local /app/data directory
 # This ensures that the latest data is available before starting
-echo "Syncing data from R2 to $ACTUAL_DATA_DIR"
-s3cmd --no-preserve sync s3://actual-budget/data "$ACTUAL_DATA_DIR/" 2>&1
+echo "Syncing data from R2 to $ACTUAL_DATA_DIR/"
+s3cmd --no-preserve sync s3://actual-budget/data/ "$ACTUAL_DATA_DIR/" 2>&1
 echo "Data sync complete"
 echo "Contents of $ACTUAL_DATA_DIR after sync:"
 ls -alR "$ACTUAL_DATA_DIR" || echo "Unable to list $ACTUAL_DATA_DIR after sync"
