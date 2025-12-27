@@ -9,9 +9,9 @@ ENV ACTUAL_HOSTNAME=0.0.0.0
 RUN mkdir -p "$ACTUAL_DATA_DIR" "$ACTUAL_DATA_DIR/server-files" "$ACTUAL_DATA_DIR/user-files" \
 	&& chmod -R 0777 "$ACTUAL_DATA_DIR"
 
-# Install curl and s3cmd
+# Install curl, s3cmd, and util-linux (for flock)
 RUN apt-get update \
-	&& apt-get -y install curl s3cmd \
+	&& apt-get -y install curl s3cmd util-linux \
 	&& rm -rf /var/lib/apt/lists/*
 
 # Install supercronic
