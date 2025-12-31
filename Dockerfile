@@ -15,7 +15,7 @@ RUN apt-get update \
 	&& rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies
-RUN pip3 install boto3 requests pyjwt pandas --break-system-packages
+RUN pip3 install boto3 requests pyjwt[crypto] pandas --break-system-packages
 
 # Install supercronic
 ENV SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.2.38/supercronic-linux-amd64 \
