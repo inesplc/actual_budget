@@ -1,2 +1,5 @@
-# Sync data to R2 every minute
+# Sync data to R2 every 10 minutes
 */10 * * * * /scripts/data_sync.sh
+
+# Fetch and Import transactions daily at 10AM
+30 14 * * * cd /scripts && python3 fetch_transactions.py
