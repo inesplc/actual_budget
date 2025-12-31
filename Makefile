@@ -20,11 +20,11 @@ show-logs:
 	@heroku logs --tail
 
 fetch-transactions:
-	@set -a && . ./$(ENV_FILE) && set +a && python3 scripts/fetch_transactions.py
+	@set -a && . ./$(ENV_FILE) && set +a && cd scripts/enable_banking && uv run fetch_transactions.py
 
 setup-scripts:
-	@cd scripts && npm install
+	@cd scripts/actual_api && npm install
+	@cd scripts/enable_banking && uv sync
 
 import-transactions:
-	@set -a && . ./$(ENV_FILE) && set +a && node scripts/debug_actual.js
-# 	@set -a && . ./$(ENV_FILE) && set +a && node scripts/import_transactions.js
+	@set -a && . ./$(ENV_FILE) && set +a && node scripts/actual_api/import_transactions.js

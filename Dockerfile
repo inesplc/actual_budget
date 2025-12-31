@@ -11,11 +11,11 @@ RUN mkdir -p "$ACTUAL_DATA_DIR" "$ACTUAL_DATA_DIR/server-files" "$ACTUAL_DATA_DI
 
 # Install curl, s3cmd, util-linux (for flock), and Python
 RUN apt-get update \
-	&& apt-get -y install curl s3cmd util-linux python3 python3-pip \
+	&& apt-get -y install curl s3cmd util-linux python3 python3-pip python3-venv \
 	&& rm -rf /var/lib/apt/lists/*
 
-# Install Python dependencies
-RUN pip3 install boto3 requests pyjwt[crypto] pandas --break-system-packages
+# Install uv
+RUN pip3 install uv --break-system-packages
 
 # Install supercronic
 ENV SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.2.38/supercronic-linux-amd64 \
@@ -32,8 +32,10 @@ RUN curl -fsSLO "$SUPERCRONIC_URL" \
 COPY scripts $SCRIPTS_DIR
 # Ensure the scripts are executable
 RUN chmod +x $SCRIPTS_DIR/*.sh
+
 # Install Node.js dependencies for scripts
-RUN cd $SCRIPTS_DIR && npm install
+RUN cd $SCRIPTS_DIR/actual_api && npm install
+
 RUN mkdir -p $LOGS_DIR && touch $LOGS_DIR/supercronic.log
 
 
