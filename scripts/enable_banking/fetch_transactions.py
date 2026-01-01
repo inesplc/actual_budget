@@ -268,39 +268,38 @@ def main():
     # Fetch
     transactions = fetch_transactions(headers, account_uid, date_from, date_to)
     
-    if not transactions:
+    if transactions:
+        # Process
+        processed_txs = []
+        for tx in transactions:
+            amount = tx["transaction_amount"]["amount"]
+            if tx["credit_debit_indicator"] == "DBIT":
+                amount = "-" + amount
+
+            processed_txs.append({
+                "booking_date": tx["booking_date"],
+                "total_amount": amount,
+                "remittance_information": clean_remittance_info(tx.get("remittance_information", []))
+            })
+
+        # Save to R2
+        df = pd.DataFrame(processed_txs)
+
+        for date, group in df.groupby('booking_date'):
+            csv_buffer = io.StringIO()
+            group.to_csv(csv_buffer, index=False)
+
+            filename = f"transactions_{target_iban}_{date}.csv"
+            r2_key = f"enable-banking/transactions/{target_iban}/{filename}"
+
+            write_to_r2(r2, r2_key, csv_buffer.getvalue())
+            logger.info(f"Saved {len(group)} transactions for {date} to R2: {r2_key}")
+    else:
         logger.info("No transactions found.")
-        return
-
-    # Process
-    processed_txs = []
-    for tx in transactions:
-        amount = tx["transaction_amount"]["amount"]
-        if tx["credit_debit_indicator"] == "DBIT":
-            amount = "-" + amount
-            
-        processed_txs.append({
-            "booking_date": tx["booking_date"],
-            "total_amount": amount,
-            "remittance_information": clean_remittance_info(tx.get("remittance_information", []))
-        })
-
-    # Save to R2
-    df = pd.DataFrame(processed_txs)
-
-    for date, group in df.groupby('booking_date'):
-        csv_buffer = io.StringIO()
-        group.to_csv(csv_buffer, index=False)
-        
-        filename = f"transactions_{target_iban}_{date}.csv"
-        r2_key = f"enable-banking/transactions/{target_iban}/{filename}"
-        
-        write_to_r2(r2, r2_key, csv_buffer.getvalue())
-        logger.info(f"Saved {len(group)} transactions for {date} to R2: {r2_key}")
 
     # Update Checkpoint
     write_to_r2(r2, R2_CHECKPOINT_KEY, date_to)
-    logger.info(f"Updated checkpoint to {date_to}")
+    logger.info(f"Checkpoint updated to {date_to}")
 
 if __name__ == "__main__":
     main()
