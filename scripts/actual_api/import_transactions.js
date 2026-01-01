@@ -119,3 +119,5 @@ async function main() {
   console.log('All done.');
   await actual.shutdown();
 }
+
+main();

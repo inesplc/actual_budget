@@ -224,6 +224,23 @@ def fetch_transactions(headers, account_uid, date_from, date_to):
             
     return all_transactions
 
+def process_transactions(transactions):
+    if transactions:
+        processed_txs = []
+        for tx in transactions:
+            amount = tx["transaction_amount"]["amount"]
+            if tx["credit_debit_indicator"] == "DBIT":
+                amount = "-" + amount
+
+            processed_txs.append({
+                "booking_date": tx["booking_date"],
+                "total_amount": amount,
+                "remittance_information": clean_remittance_info(tx.get("remittance_information", []))
+            })
+        return pd.DataFrame(processed_txs)
+    else:
+        return None
+
 def main():
     r2 = get_r2_client()
     
@@ -251,51 +268,29 @@ def main():
     headers = {"Authorization": f"Bearer {token}"}
     session = authenticate(headers, r2, session_data)
     
-    # Find Account UID
-    account_uid = None
-    target_iban = os.environ.get("ENABLE_BANKING_DUO_IBAN")
+    # Fetch Transactions per Account
     for acc in session.get("accounts", []):
         # Check IBAN
-        iban = acc.get("account_id", {}).get("iban")
-        if iban == target_iban:
-            account_uid = acc.get("uid")
-            break
-            
-    if not account_uid:
-        logger.error(f"Account with IBAN {target_iban} not found in session.")
-        sys.exit(1)
-        
-    # Fetch
-    transactions = fetch_transactions(headers, account_uid, date_from, date_to)
-    
-    if transactions:
-        # Process
-        processed_txs = []
-        for tx in transactions:
-            amount = tx["transaction_amount"]["amount"]
-            if tx["credit_debit_indicator"] == "DBIT":
-                amount = "-" + amount
+        target_iban = acc.get("account_id", {}).get("iban")
+        account_uid = acc.get("uid")
+        if not account_uid:
+            logger.error(f"Account UID not found in session.")
+            sys.exit(1)
 
-            processed_txs.append({
-                "booking_date": tx["booking_date"],
-                "total_amount": amount,
-                "remittance_information": clean_remittance_info(tx.get("remittance_information", []))
-            })
+        transactions = fetch_transactions(headers, account_uid, date_from, date_to)
+        processed_transactions = process_transactions(transactions)
+        if processed_transactions is not None and not processed_transactions.empty:
+            for date, group in processed_transactions.groupby('booking_date'):
+                csv_buffer = io.StringIO()
+                group.to_csv(csv_buffer, index=False)
 
-        # Save to R2
-        df = pd.DataFrame(processed_txs)
+                filename = f"transactions_{target_iban}_{date}.csv"
+                r2_key = f"enable-banking/transactions/{target_iban}/{filename}"
 
-        for date, group in df.groupby('booking_date'):
-            csv_buffer = io.StringIO()
-            group.to_csv(csv_buffer, index=False)
-
-            filename = f"transactions_{target_iban}_{date}.csv"
-            r2_key = f"enable-banking/transactions/{target_iban}/{filename}"
-
-            write_to_r2(r2, r2_key, csv_buffer.getvalue())
-            logger.info(f"Saved {len(group)} transactions for {date} to R2: {r2_key}")
-    else:
-        logger.info("No transactions found.")
+                write_to_r2(r2, r2_key, csv_buffer.getvalue())
+                logger.info(f"Saved {len(group)} transactions for {date} to R2: {r2_key}")
+        else:
+            logger.info("No transactions found.")
 
     # Update Checkpoint
     write_to_r2(r2, R2_CHECKPOINT_KEY, date_to)

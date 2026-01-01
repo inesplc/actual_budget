@@ -26,7 +26,6 @@ You need the following environment variables set in your `.env` file (for local 
 
 ### Enable Banking (Transaction Fetching)
 *   `ENABLE_BANKING_PRIVATE_KEY_BASE64`: Your Enable Banking private key (Base64 encoded).
-*   `ENABLE_BANKING_DUO_IBAN`: The IBAN of the account to import transactions for.
 
 
 ## Deployment
