@@ -7,7 +7,7 @@ const fs = require('fs');
 // Configuration
 const SERVER_URL = 'https://actual-budget-ines-478d02935e03.herokuapp.com';
 const PASSWORD = process.env.ACTUAL_BUDGET_PASSWORD;
-const IMPORT_CONFIG = process.env.ACTUAL_IMPORT_CONFIG ? JSON.parse(process.env.ACTUAL_IMPORT_CONFIG) : [];
+const IMPORT_CONFIG = process.env.ACTUAL_IMPORT_CONFIG ? JSON.parse(process.env.ACTUAL_IMPORT_CONFIG.replace(/^'|'$/g, '')) : [];
 
 // R2 Configuration
 const R2_ACCOUNT_ID = process.env.CLOUDFLARE_ACCOUNT_ID;
