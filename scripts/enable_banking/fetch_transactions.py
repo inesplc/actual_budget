@@ -31,6 +31,11 @@ R2_BUCKET_NAME = "actual-budget"
 R2_SESSION_KEY = "enable-banking/session_store.json"
 R2_CHECKPOINT_KEY = "enable-banking/checkpoint.txt"
 
+def mask_iban(iban):
+    if not iban or len(iban) < 4:
+        return iban
+    return f"IBAN ending in {iban[-4:]}"
+
 def get_r2_client():
     """Initialize and return a boto3 client for R2."""
     
@@ -288,7 +293,10 @@ def main():
                 r2_key = f"enable-banking/transactions/{target_iban}/{filename}"
 
                 write_to_r2(r2, r2_key, csv_buffer.getvalue())
-                logger.info(f"Saved {len(group)} transactions for {date} to R2: {r2_key}")
+
+                masked_iban = mask_iban(target_iban)
+                masked_key = r2_key.replace(target_iban, masked_iban)
+                logger.info(f"Saved {len(group)} transactions for {date} to R2: {masked_key}")
         else:
             logger.info("No transactions found.")
 

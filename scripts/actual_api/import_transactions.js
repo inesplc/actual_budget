@@ -32,6 +32,11 @@ const s3 = new S3Client({
   },
 });
 
+function maskIBAN(iban) {
+  if (!iban || iban.length < 4) return iban;
+  return `IBAN ending in ${iban.slice(-4)}`;
+}
+
 async function main() {
   console.log('Initializing Actual Budget API...');
   await actual.init({
@@ -41,7 +46,8 @@ async function main() {
 
   for (const config of IMPORT_CONFIG) {
       const { iban, syncId, accountName } = config;
-      console.log(`\n--- Processing IBAN: ${iban} ---`);
+      const maskedIban = maskIBAN(iban);
+      console.log(`\n--- Processing ${maskedIban} ---`);
       
       try {
         console.log(`Downloading budget ${syncId}...`);
@@ -51,14 +57,14 @@ async function main() {
         const account = accounts.find(a => a.name === accountName);
 
         if (!account) {
-            console.error(`Account "${accountName}" not found for IBAN ${iban}. Skipping.`);
+            console.error(`Account "${accountName}" not found for ${maskedIban}. Skipping.`);
             continue;
         }
         console.log(`Found account "${accountName}" with ID: ${account.id}`);
 
         // List files in R2
         const prefix = `enable-banking/transactions/${iban}/`;
-        console.log(`Checking for files in R2 with prefix: ${prefix}`);
+        console.log(`Checking for files in R2 with prefix: enable-banking/transactions/${maskedIban}/`);
         
         const listCmd = new ListObjectsV2Command({
             Bucket: R2_BUCKET,
@@ -76,7 +82,8 @@ async function main() {
             const key = file.Key;
             if (!key.endsWith('.csv')) continue;
 
-            console.log(`Processing ${key}...`);
+            const maskedKey = key.replaceAll(iban, maskedIban);
+            console.log(`Processing ${maskedKey}...`);
 
             // Get file content
             const getCmd = new GetObjectCommand({ Bucket: R2_BUCKET, Key: key });
@@ -110,7 +117,8 @@ async function main() {
             const filename = key.split('/').pop();
             const newKey = `enable-banking/transactions_imported/${iban}/${filename}`;
 
-            console.log(`Moving file to ${newKey}...`);
+            const maskedNewKey = newKey.replaceAll(iban, maskedIban);
+            console.log(`Moving file to ${maskedNewKey}...`);
             await s3.send(new PutObjectCommand({
             Bucket: R2_BUCKET,
             Key: newKey,
@@ -123,7 +131,7 @@ async function main() {
             }));
         }
       } catch (error) {
-          console.error(`Error processing IBAN ${iban}:`, error);
+          console.error(`Error processing ${maskedIban}:`, error);
       }
   }
 

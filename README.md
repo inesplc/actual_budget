@@ -28,6 +28,9 @@ You need the following environment variables set in your `.env` file (for local 
 ### Enable Banking (Transaction Fetching)
 *   `ENABLE_BANKING_PRIVATE_KEY_BASE64`: Your Enable Banking private key (Base64 encoded).
 
+### Other
+*   `NODE_TLS_REJECT_UNAUTHORIZED`: Set to `0` if you encounter SSL certificate errors (e.g., with self-signed certificates or certain proxy configurations). **Use with caution in production.**
+
 
 ## Deployment
 
