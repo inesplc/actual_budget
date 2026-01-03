@@ -17,7 +17,8 @@ You need the following environment variables set in your `.env` file (for local 
 
 ### Actual Budget
 *   `ACTUAL_BUDGET_PASSWORD`: Your Actual Budget server password.
-*   `ACTUAL_SYNC_ID`: The ID of the budget file you want to sync with.
+*   `ACTUAL_IMPORT_CONFIG`: A JSON string defining the mapping between IBANs, Sync IDs, and Account Names.
+    Example: `[{"iban":"PT50...","syncId":"...","accountName":"Checking"}]`
 
 ### Cloudflare R2 (Data Storage)
 *   `CLOUDFLARE_ACCOUNT_ID`: Your Cloudflare Account ID.
