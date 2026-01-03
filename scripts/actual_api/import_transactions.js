@@ -1,6 +1,8 @@
 const actual = require('@actual-app/api');
 const { S3Client, ListObjectsV2Command, GetObjectCommand, PutObjectCommand, DeleteObjectCommand } = require('@aws-sdk/client-s3');
 const { parse } = require('csv-parse/sync');
+const path = require('path');
+const fs = require('fs');
 
 // Configuration
 const SERVER_URL = 'https://actual-budget-ines-478d02935e03.herokuapp.com';
@@ -39,9 +41,14 @@ function maskIBAN(iban) {
 
 async function main() {
   console.log('Initializing Actual Budget API...');
+  const cacheDir = path.join(process.cwd(), 'cache');
+  if (!fs.existsSync(cacheDir)){
+      fs.mkdirSync(cacheDir);
+  }
   await actual.init({
     serverURL: SERVER_URL,
     password: PASSWORD,
+    dataDir: cacheDir,
   });
 
   for (const config of IMPORT_CONFIG) {

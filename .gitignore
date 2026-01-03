@@ -70,4 +70,4 @@ pip-delete-this-directory.txt
 .pytest_cache/
 .mypy_cache/
 .dmypy.json
-dmypy.json
+dmypy.jsoncache/
