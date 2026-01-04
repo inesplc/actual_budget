@@ -36,6 +36,9 @@ RUN chmod +x $SCRIPTS_DIR/*.sh
 # Install Node.js dependencies for scripts
 RUN cd $SCRIPTS_DIR/actual_api && npm install
 
+# Install Python dependencies
+RUN cd $SCRIPTS_DIR/enable_banking && uv sync
+
 RUN mkdir -p $LOGS_DIR && touch $LOGS_DIR/supercronic.log
 
 
