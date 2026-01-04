@@ -5,7 +5,7 @@ const path = require('path');
 const fs = require('fs');
 
 // Configuration
-const SERVER_URL = 'https://actual-budget-ines-478d02935e03.herokuapp.com';
+const SERVER_URL = process.env.ACTUAL_BUDGET_SERVER;
 const PASSWORD = process.env.ACTUAL_BUDGET_PASSWORD;
 const IMPORT_CONFIG = process.env.ACTUAL_IMPORT_CONFIG ? JSON.parse(process.env.ACTUAL_IMPORT_CONFIG.replace(/^'|'$/g, '')) : [];
 
