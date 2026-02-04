@@ -1,0 +1,74 @@
+.env
+test**
+*.pem
+
+# Dependencies
+node_modules/
+jspm_packages/
+
+# Production builds
+dist/
+build/
+*.min.js
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory
+coverage/
+.nyc_output/
+
+# IDE
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Cache
+.npm/
+.eslintcache
+.cache/
+cache/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+**venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+pip-log.txt
+pip-delete-this-directory.txt
+.pytest_cache/
+.mypy_cache/
+.dmypy.json
+dmypy.jsoncache/

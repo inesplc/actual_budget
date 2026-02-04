@@ -1,0 +1,10 @@
+{
+  "name": "actual_budget_scripts",
+  "version": "1.0.0",
+  "author": "Inesplc",
+  "dependencies": {
+    "@actual-app/api": "^26.2.0",
+    "@aws-sdk/client-s3": "^3.226.0",
+    "csv-parse": "^6.1.0"
+  }
+}

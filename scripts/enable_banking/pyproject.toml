@@ -1,0 +1,12 @@
+[project]
+name = "enable-banking-scripts"
+version = "0.1.0"
+description = "Scripts for fetching transactions from Enable Banking"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "boto3>=1.35.99",
+    "requests>=2.32.3",
+    "pyjwt[crypto]>=2.10.1",
+    "pandas>=2.2.3",
+]
