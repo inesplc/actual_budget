@@ -28,6 +28,7 @@ ASPSP_LIST = json.loads(os.environ.get("ENABLE_BANKING_ASPSP", "[]"))
 R2_BUCKET_NAME = "actual-budget"
 R2_SESSION_KEY = "enable-banking/{aspsp}/session_store.json"
 R2_CHECKPOINT_KEY = "enable-banking/checkpoint.txt"
+TODAY = datetime.now().date()
 
 def mask_iban(iban):
     if not iban or len(iban) < 4:
@@ -106,32 +107,19 @@ def get_jwt():
         headers={"kid": os.environ.get("ENABLE_BANKING_APPLICATION_ID")},
     )
 
-def authenticate(headers, r2_client, aspsp, current_session=None):
-    """Authenticate with Enable Banking API, reusing session or creating new one."""
-    
-    # Check if current session is valid
-    if current_session:
-        session_id = current_session.get("session_id")
-        if session_id:
-            logger.info(f"Checking validity of stored session: {session_id}")
-            try:
-                r = requests.get(f"{API_ORIGIN}/sessions/{session_id}", headers=headers)
-                if r.status_code == 200:
-                    logger.info("Session is valid.")
-                    return current_session
-                else:
-                    logger.warning(f"Session invalid (Status: {r.status_code}).")
-            except Exception as e:
-                logger.warning(f"Error checking session: {e}")
-    elif os.environ.get("IS_LOCAL"):
-        
+def recreate_session(headers, aspsp, r2_client):
+    IS_LOCAL = os.environ.get("IS_LOCAL").lower() == "true"
+    if not IS_LOCAL:
+        logger.error("Session expired and IS_LOCAL is not set. Cannot recreate session.")
+        sys.exit(1)
+    else:
         r = requests.get(f"{API_ORIGIN}/application", headers=headers)
         r.raise_for_status()
         app_details = r.json()
-        
-        # Start Auth
         logger.info(f"Starting new authentication flow valid for {aspsp['name']}...")
         valid_until = (datetime.now(timezone.utc) + timedelta(seconds=aspsp["consent_validity_seconds"])).isoformat()
+
+        # Start Auth
         body = {
             "access": {"valid_until": valid_until},
             "aspsp": {"name": aspsp["name"], "country": aspsp["country"]},
@@ -167,10 +155,32 @@ def authenticate(headers, r2_client, aspsp, current_session=None):
         
         # Save to R2
         write_to_r2(r2_client, R2_SESSION_KEY.format(aspsp=aspsp['name'].lower().replace(" ", "_")), json.dumps(session, indent=2))
-    else:
-        logger.error("No valid session found and IS_LOCAL is not set. Cannot authenticate.")
-        sys.exit(1)
-    return session
+
+        return session
+
+def authenticate(headers, r2_client, aspsp, current_session=None):
+    """Authenticate with Enable Banking API, reusing session or creating new one."""
+
+    # Check if current session is valid
+    if current_session:
+        session_id = current_session.get("session_id")
+        if session_id:
+            logger.info(f"Checking validity of stored session: {session_id}")
+            try:
+                r = requests.get(f"{API_ORIGIN}/sessions/{session_id}", headers=headers)
+                r.raise_for_status()
+                validity = r.json().get("access").get("valid_until").split("T")[0]
+
+                if datetime.strptime(validity, "%Y-%m-%d").date() > TODAY:
+                    logger.info("Session is valid.")
+                    return current_session
+                else:
+                    logger.warning(f"Session invalid (Validity: {validity}.")
+                    return recreate_session(headers, aspsp, r2_client)
+
+            except Exception as e:
+                logger.warning(f"Error checking session: {e}")
+                sys.exit(1)
 
 def clean_remittance_info(remittance_information):
     if not remittance_information:
@@ -252,7 +262,7 @@ def main():
 
     # Determine Date Range
     date_from = checkpoint_date
-    date_to = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
+    date_to = (TODAY - timedelta(days=1)).strftime("%Y-%m-%d")
 
     if date_from >= date_to:
         logger.info(f"Checkpoint is up to date ({date_from}). No transactions to fetch.")
