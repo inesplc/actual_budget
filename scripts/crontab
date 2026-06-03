@@ -1,5 +1,2 @@
 # Sync data to R2 every 10 minutes
 */10 * * * * /scripts/data_sync.sh
-
-# Fetch and Import transactions daily
-0 9 * * * cd /scripts/enable_banking && .venv/bin/python fetch_transactions.py && cd /scripts/actual_api && node import_transactions.js
