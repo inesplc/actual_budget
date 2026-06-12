@@ -43,16 +43,6 @@ build-local:
 	@docker build -t $(LOCAL_IMAGE) .
 
 run-local: build-local
-	@mkdir -p $(LOCAL_DATA_DIR)
-	@docker run --rm -it \
-		--env-file $(ENV_FILE) \
-		-e PORT=5006 \
-		-p $(LOCAL_PORT):5006 \
-		-v "$(LOCAL_DATA_DIR):/app/data" \
-		--name $(LOCAL_IMAGE) \
-		$(LOCAL_IMAGE)
-
-push-local: build-local
 	@test -d $(LOCAL_DATA_DIR) || (echo "$(LOCAL_DATA_DIR) does not exist"; exit 1)
 	@docker run --rm \
 		--env-file $(ENV_FILE) \
