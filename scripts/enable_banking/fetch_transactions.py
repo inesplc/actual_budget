@@ -169,16 +169,23 @@ def authenticate(headers, r2_client, aspsp, current_session=None):
             try:
                 r = requests.get(f"{API_ORIGIN}/sessions/{session_id}", headers=headers)
                 r.raise_for_status()
-                validity = r.json().get("access").get("valid_until").split("T")[0]
+                session_details = r.json()
 
-                if datetime.strptime(validity, "%Y-%m-%d").date() > TODAY:
-                    logger.info("Session is valid.")
-                    return current_session
-                else:
-                    logger.warning(f"Session invalid (Validity: {validity}.")
+                status = session_details.get("status")
+                validity = session_details.get("access", {}).get("valid_until", "").split("T")[0]
+
+                if status != "AUTHORIZED":
+                    logger.warning(f"Session invalid (status: {status}).")
                     return recreate_session(headers, aspsp, r2_client)
 
-            except Exception as e:
+                if not validity or datetime.strptime(validity, "%Y-%m-%d").date() <= TODAY:
+                    logger.warning(f"Session invalid (Validity: {validity}).")
+                    return recreate_session(headers, aspsp, r2_client)
+
+                logger.info("Session is valid.")
+                return current_session
+
+            except requests.exceptions.RequestException as e:
                 logger.warning(f"Error checking session: {e}")
                 sys.exit(1)
 
