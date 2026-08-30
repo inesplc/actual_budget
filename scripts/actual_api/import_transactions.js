@@ -117,6 +117,11 @@ async function main() {
                 // Import
                 console.log(`Importing ${transactions.length} transactions...`);
                 await actual.importTransactions(account.id, transactions);
+                // Push changes to the server before we potentially switch to a
+                // different budget on the next config iteration; otherwise
+                // downloadBudget() replaces the in-memory state and the
+                // imports for this budget are lost.
+                await actual.sync();
                 console.log('Import successful.');
             }
 
